@@ -13,6 +13,8 @@
         let keysDiv;
         let bullets = [];
         let bulletSpeed = 10;
+        let enemy;
+        let coltest = 4;
 
         window.onload = function() {
             app = new PIXI.Application(
@@ -34,6 +36,18 @@
             player.y = app.view.height / 2;
 
             app.stage.addChild(player);
+            
+            
+            // enemy object
+            enemy = new PIXI.Sprite.from("images/shiptest.png");
+            enemy.anchor.set(0.5);
+            enemy.x = app.view.width - 16;
+            enemy.y = app.view.height / 2;
+
+            app.stage.addChild(enemy);
+
+            app.ticker.add(gameLoopEnemy)
+
 
             // bullets
             app.ticker.add(gameLoopBullets);
@@ -58,6 +72,31 @@
         //     player.x = pos.x;
         //     player.y = pos.y;
         // }
+        
+        //_____ENEMY_LOGIC_____
+        function gameLoopEnemy(delta) {
+            player.x += coltest;
+            enemy.x -= coltest;
+
+            if (rectsIntersect(player, enemy)) {
+                coltest = 0;
+            }
+        }
+
+        function rectsIntersect(a, b) {
+            let aBox = a.getBounds();
+            let bBox = b.getBounds();
+
+            return aBox.x + aBox.width > bBox.x &&
+                   aBox.x < bBox.x + bBox.width &&
+                   aBox.y + aBox.height > bBox.y &&
+                   aBox.y < bBox.y + bBox.height;
+        }
+
+        //_____END_OF_ENEMY_LOGIC_____
+
+
+
 
 
         //_______BULLET_LOGIC________
@@ -67,7 +106,6 @@
             let bullet = createBullet();
             bullets.push(bullet);
         }
-
 
         function createBullet() {
             let bullet = new PIXI.Sprite.from("images/bulletTest.png");
@@ -101,9 +139,10 @@
         function gameLoopBullets(delta) {
             updateBullets(delta)
         }
-        //____END_OF_BULLET_LOGIC______
+        //_____END_OF_BULLET_LOGIC_____
 
 
+        // _____MOVEMENT_LOGIC_____
         function keysDown(e) {
             // console.log(e.keyCode);
             keys[e.keyCode] = true; 
@@ -134,7 +173,7 @@
                 player.x += 5;
             }
         }
-
+        //_____END_OF_MOVEMENT_LOGIC_____
         
 
     </script>
