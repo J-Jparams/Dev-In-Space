@@ -11,6 +11,8 @@
         let player;
         let keys = {};
         let keysDiv;
+        let bullets = [];
+        let bulletSpeed = 10;
 
         window.onload = function() {
             app = new PIXI.Application(
@@ -21,8 +23,10 @@
                 }
             );
 
-            document.body.appendChild(app.view)
-            
+            document.querySelector("#gameDiv").appendChild(app.view)
+            app.stage.interactive = true;
+            document.querySelector("#gameDiv").addEventListener("pointerdown", firebullet);
+
             // player object
             player = new PIXI.Sprite.from("images/shiptest.png");
             player.anchor.set(0.5);
@@ -30,8 +34,11 @@
             player.y = app.view.height / 2;
 
             app.stage.addChild(player);
+
+            // bullets
+            app.ticker.add(gameLoopBullets);
             
-            // mouse interactions
+            // _____MOUSE_INTERACTION_____
             // app.stage.interactive = true;
             // app.stage.on("pointermove", movePlayer);
             
@@ -45,7 +52,7 @@
             keysDiv = document.querySelector("#keys")
 
         }
-        //        MOUSE INTERACTION
+        //______________MOUSE_INTERACTION________________
         // function movePlayer(e) {
         //     let pos = e.data.global;
         //     player.x = pos.x;
@@ -53,7 +60,50 @@
         // }
 
 
-        // 
+        //_______BULLET_LOGIC________
+        function firebullet(e) {
+            console.log("FIRE!!");
+
+            let bullet = createBullet();
+            bullets.push(bullet);
+        }
+
+
+        function createBullet() {
+            let bullet = new PIXI.Sprite.from("images/bulletTest.png");
+            bullet.anchor.set(0.5);
+            bullet.x = player.x;
+            bullet.y = player.y;
+            bullet.speed = bulletSpeed;
+            app.stage.addChild(bullet);
+
+            return bullet;
+        }
+
+        function updateBullets(delta) {
+            for (let i = 0; i < bullets.length; i++) {
+                bullets[i].position.y -= bullets[i].speed;
+
+                if (bullets[i].position.y < 0) {
+                    bullets[i].dead = true; 
+                }
+            }
+
+            for (let i = 0; i < bullets.length; i++) {
+               if (bullets[i].dead) {
+                   app.stage.removeChild(bullets[i]);
+                   bullets.splice(i, 1); 
+                }
+            }
+
+        }
+
+        function gameLoopBullets(delta) {
+            updateBullets(delta)
+        }
+        //____END_OF_BULLET_LOGIC______
+
+
         function keysDown(e) {
             // console.log(e.keyCode);
             keys[e.keyCode] = true; 
@@ -85,9 +135,12 @@
             }
         }
 
+        
+
     </script>
 </head>
 <body>
     <div id="keys"></div>
+    <div id="gameDiv"></div>
 </body>
 </html>
