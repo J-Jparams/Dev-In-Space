@@ -14,14 +14,14 @@
         let bullets = [];
         let bulletSpeed = 10;
         let enemy;
-        let coltest = 4;
+        let coltest = 1;
 
         window.onload = function() {
             app = new PIXI.Application(
                 {
                     width: 800,
                     height: 600,
-                    backgroundColor: 0xAAAAAA
+                    backgroundColor: 0000000
                 }
             );
 
@@ -30,7 +30,7 @@
             document.querySelector("#gameDiv").addEventListener("pointerdown", firebullet);
 
             // player object
-            player = new PIXI.Sprite.from("images/shiptest.png");
+            player = new PIXI.Sprite.from("images/ship1.png");
             player.anchor.set(0.5);
             player.x = app.view.width / 2;
             player.y = app.view.height / 2;
@@ -66,6 +66,9 @@
             keysDiv = document.querySelector("#keys")
 
         }
+
+
+
         //______________MOUSE_INTERACTION________________
         // function movePlayer(e) {
         //     let pos = e.data.global;
@@ -75,14 +78,14 @@
         
         //_____ENEMY_LOGIC_____
         function gameLoopEnemy(delta) {
-            player.x += coltest;
             enemy.x -= coltest;
 
             if (rectsIntersect(player, enemy)) {
                 coltest = 0;
             }
+            
         }
-
+            // collision
         function rectsIntersect(a, b) {
             let aBox = a.getBounds();
             let bBox = b.getBounds();
@@ -109,22 +112,27 @@
 
         function createBullet() {
             let bullet = new PIXI.Sprite.from("images/bulletTest.png");
-            bullet.anchor.set(0.5);
+            bullet.anchor.set(0);
             bullet.x = player.x;
-            bullet.y = player.y;
+            bullet.y = player.y+6;
             bullet.speed = bulletSpeed;
             app.stage.addChild(bullet);
+            // if (rectsIntersect(bullet, enemy)) {
+            //     coltest = 0;
+            // }
 
             return bullet;
         }
 
         function updateBullets(delta) {
             for (let i = 0; i < bullets.length; i++) {
-                bullets[i].position.y -= bullets[i].speed;
+                bullets[i].position.x += bullets[i].speed;
 
-                if (bullets[i].position.y < 0) {
+                if (bullets[i].position.x < 0) {
                     bullets[i].dead = true; 
                 }
+                
+                
             }
 
             for (let i = 0; i < bullets.length; i++) {
@@ -138,6 +146,7 @@
 
         function gameLoopBullets(delta) {
             updateBullets(delta)
+            
         }
         //_____END_OF_BULLET_LOGIC_____
 
