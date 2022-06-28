@@ -51,6 +51,7 @@
 
             // bullets
             app.ticker.add(gameLoopBullets);
+
             
             // _____MOUSE_INTERACTION_____
             // app.stage.interactive = true;
@@ -84,6 +85,7 @@
                 coltest = 0;
             }
             
+            
         }
             // collision
         function rectsIntersect(a, b) {
@@ -108,6 +110,7 @@
 
             let bullet = createBullet();
             bullets.push(bullet);
+
         }
 
         function createBullet() {
@@ -117,9 +120,6 @@
             bullet.y = player.y+6;
             bullet.speed = bulletSpeed;
             app.stage.addChild(bullet);
-            // if (rectsIntersect(bullet, enemy)) {
-            //     coltest = 0;
-            // }
 
             return bullet;
         }
@@ -132,6 +132,10 @@
                     bullets[i].dead = true; 
                 }
                 
+                if (rectsIntersect(bullets[i], enemy)) {
+                coltest = 0;
+                app.stage.removeChild(bullets[i]);
+                bullets.splice(i, 1);             }
                 
             }
 
