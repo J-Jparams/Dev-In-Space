@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+
     <script src="js/pixi.min.js"></script>
     <script>
         let app;
@@ -15,6 +9,7 @@
         let bulletSpeed = 10;
         let enemy;
         let coltest = 1;
+        let enemies = [];
 
         window.onload = function() {
             app = new PIXI.Application(
@@ -29,16 +24,16 @@
             app.stage.interactive = true;
             document.querySelector("#gameDiv").addEventListener("pointerdown", firebullet);
 
-            // player object
+        // player object
             player = new PIXI.Sprite.from("images/ship1.png");
             player.anchor.set(0.5);
             player.x = app.view.width / 2;
             player.y = app.view.height / 2;
 
             app.stage.addChild(player);
+        //player object END
             
-            
-            // enemy object
+        // enemy object
             enemy = new PIXI.Sprite.from("images/shiptest.png");
             enemy.anchor.set(0.5);
             enemy.x = app.view.width - 16;
@@ -47,24 +42,29 @@
             app.stage.addChild(enemy);
 
             app.ticker.add(gameLoopEnemy)
+        // enemy object END
 
+        //constant enemies
+            app.ticker.add(gameLoopEnemies);
+        //constant enemies END
 
-            // bullets
+        // bullets
             app.ticker.add(gameLoopBullets);
-
+        // bullets END
             
             // _____MOUSE_INTERACTION_____
             // app.stage.interactive = true;
             // app.stage.on("pointermove", movePlayer);
             
 
-            // keyboard event handlers
+        // keyboard event handlers
             window.addEventListener("keydown", keysDown);
             window.addEventListener("keyup", keysUp);
 
             app.ticker.add(gameLoop);
 
             keysDiv = document.querySelector("#keys")
+        // keyboard event handlers END
 
         }
 
@@ -77,17 +77,18 @@
         //     player.y = pos.y;
         // }
         
-        //_____ENEMY_LOGIC_____
+    //_____ENEMY_LOGIC_____
         function gameLoopEnemy(delta) {
             enemy.x -= coltest;
 
             if (rectsIntersect(player, enemy)) {
                 coltest = 0;
             }
-            
+    //_____ENEMY_LOGIC_END_____
+
             
         }
-            // collision
+        // collision
         function rectsIntersect(a, b) {
             let aBox = a.getBounds();
             let bBox = b.getBounds();
@@ -96,15 +97,69 @@
                    aBox.x < bBox.x + bBox.width &&
                    aBox.y + aBox.height > bBox.y &&
                    aBox.y < bBox.y + bBox.height;
+        // colision END
         }
 
-        //_____END_OF_ENEMY_LOGIC_____
+    //_____END_OF_ENEMY_LOGIC_____
+
+    //_____CONSTANT_ENEMIES_____
+        
+    setInterval(function(){ 
+            console.log("Oooo Yeaaa!");
+            let constEnemy = createEnemies();
+            enemies.push(constEnemy);
+            
+        }, 1000);
+    
+        // function spawnEnemies() {
+            
+        //     let constEnemy = createEnemies();
+        //     enemies.push(constEnemy);
+
+            
+
+        // }
+
+        function createEnemies() {
+            let constEnemy = new PIXI.Sprite.from("images/Enemies.png");
+            constEnemy.anchor.set(0);
+            constEnemy.x = app.view.width - 16;
+            constEnemy.y = app.view.height / 2;
+            constEnemy.speed = coltest;
+            app.stage.addChild(constEnemy);
+
+            return constEnemy;
+        }
+
+        function updateEnemies(delta) {
+            for (let i = 0; i < enemies.length; i++) {
+                enemies[i].position.x -= enemies[i].speed;
+
+                if (enemies[i].position.x < 0) {
+                    enemies[i].dead = true; 
+                }
 
 
+                
+                
+            }
 
+            for (let i = 0; i < enemies.length; i++) {
+               if (enemies[i].dead) {
+                   app.stage.removeChild(enemies[i]);
+                   enemies.splice(i, 1); 
+                }
+            }
 
+        }
 
-        //_______BULLET_LOGIC________
+        function gameLoopEnemies(delta) {
+            updateEnemies(delta)
+            
+        }
+    //_____CONSTANT_ENEMIES_END_____
+
+    //_______BULLET_LOGIC________
         function firebullet(e) {
             console.log("FIRE!!");
 
@@ -136,6 +191,14 @@
                 coltest = 0;
                 app.stage.removeChild(bullets[i]);
                 bullets.splice(i, 1);             }
+
+                if (rectsIntersect(bullets[i], enemies[i])) {
+                    coltest = 0;
+                    app.stage.removeChild(bullets[i]);
+                    bullets.splice(i, 1);             
+                    app.stage.removeChild(enemies[i]);
+                    enemies.splice(i, 1);             
+                }
                 
             }
 
@@ -152,10 +215,10 @@
             updateBullets(delta)
             
         }
-        //_____END_OF_BULLET_LOGIC_____
+    //_____END_OF_BULLET_LOGIC_____
 
 
-        // _____MOVEMENT_LOGIC_____
+    // _____MOVEMENT_LOGIC_____
         function keysDown(e) {
             // console.log(e.keyCode);
             keys[e.keyCode] = true; 
@@ -186,7 +249,7 @@
                 player.x += 5;
             }
         }
-        //_____END_OF_MOVEMENT_LOGIC_____
+    //_____END_OF_MOVEMENT_LOGIC_____
         
 
     </script>
